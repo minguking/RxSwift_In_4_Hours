@@ -39,7 +39,7 @@ class MenuListViewModel {
         _ = menuObservable
             .map { menus in
                 return menus.map { m in
-                    Menu(id: 0, name: m.name, price: m.price, count: 0)
+                    Menu(id: m.id, name: m.name, price: m.price, count: 0)
                 }
         }
         .take(1)
