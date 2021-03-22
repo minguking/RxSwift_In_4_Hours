@@ -9,12 +9,13 @@
 import Foundation
 
 import RxSwift
+import RxRelay
 
 class MenuListViewModel {
     
     let disposeBag = DisposeBag()
     
-    var menuObservable = BehaviorSubject<[Menu]>(value: [])
+    var menuObservable = BehaviorRelay<[Menu]>(value: [])
     
     lazy var itemCount = menuObservable.map {
         $0.map { $0.count }.reduce(0, +)
@@ -25,14 +26,28 @@ class MenuListViewModel {
     }
     
     init() {
-        let menus: [Menu] = [
-            Menu(id: 0, name: "fried1", price: 100, count: 0),
-            Menu(id: 1, name: "fried2", price: 200, count: 0),
-            Menu(id: 2, name: "fried3", price: 300, count: 0),
-            Menu(id: 3, name: "fried4", price: 400, count: 0)
-        ]
+        _ = APIService.fetchAllMenusRx()
+            .map { data -> [MenuItem] in
+                struct Response: Decodable {
+                    let menus: [MenuItem]
+                }
+                let response = try! JSONDecoder().decode(Response.self, from: data)
+                return response.menus
+            }
+            .map { menuItems -> [Menu] in
+                var menus: [Menu] = []
+                menuItems.enumerated().forEach { (index, item) in
+                    let menu = Menu.fromMenuItems(id: index, item: item)
+                    menus.append(menu)
+                }
+                return menus
+            }
+            .take(1)
+            .bind(to: menuObservable)
+    }
+    
+    func onOrder() {
         
-        menuObservable.onNext(menus)
     }
     
     func clearAllItemSelections() {
@@ -44,7 +59,7 @@ class MenuListViewModel {
         }
         .take(1)
         .subscribe(onNext: {
-            self.menuObservable.onNext($0)
+            self.menuObservable.accept($0)
         })
     }
     
@@ -56,7 +71,7 @@ class MenuListViewModel {
                         return Menu(id: m.id,
                                     name: m.name,
                                     price: m.price,
-                                    count: m.count + increase)
+                                    count: max(m.count + increase, 0))
                     } else {
                         return Menu(id: m.id,
                                     name: m.name,
@@ -67,7 +82,7 @@ class MenuListViewModel {
         }
         .take(1)
         .subscribe(onNext: {
-            self.menuObservable.onNext($0)
+            self.menuObservable.accept($0)
         })
     }
     

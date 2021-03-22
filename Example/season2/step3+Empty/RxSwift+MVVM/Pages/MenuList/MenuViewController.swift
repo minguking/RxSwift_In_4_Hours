@@ -54,19 +54,19 @@ class MenuViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let identifier = segue.identifier ?? ""
-        if identifier == "OrderViewController",
-            let orderVC = segue.destination as? OrderViewController {
-            // TODO: pass selected menus
-        }
-    }
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        let identifier = segue.identifier ?? ""
+//        if identifier == "OrderViewController",
+//            let orderVC = segue.destination as? OrderViewController {
+//            // TODO: pass selected menus
+//        }
+//    }
 
-    func showAlert(_ title: String, _ message: String) {
-        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertVC.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alertVC, animated: true, completion: nil)
-    }
+//    func showAlert(_ title: String, _ message: String) {
+//        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        alertVC.addAction(UIAlertAction(title: "OK", style: .default))
+//        present(alertVC, animated: true, completion: nil)
+//    }
 
     // MARK: - InterfaceBuilder Links
 
@@ -84,10 +84,7 @@ class MenuViewController: UIViewController {
         // showAlert("Order Fail", "No Orders")
         // performSegue(withIdentifier: "OrderViewController", sender: nil)
         
-        viewModel.menuObservable.onNext([
-            Menu(id: 10, name: "changed", price: 100_000, count: 22),
-            Menu(id: 11, name: "changed", price: 200_000, count: 2)
-        ])
+        viewModel.onOrder()
         
     }
 }
