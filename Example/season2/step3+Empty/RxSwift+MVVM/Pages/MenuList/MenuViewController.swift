@@ -13,7 +13,7 @@ import RxCocoa
 
 class MenuViewController: UIViewController {
     
-    // MARK: - Properties
+    // MARK: - Properties 
     
     let cellID = "MenuItemTableViewCell"
     
